@@ -6,4 +6,14 @@ plugins:
   scorecard.sdk.operatorframework.io/v2: {}
 projectName: kube-mysql
 repo: github.com/vellanci/kube-mysql.git
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: vellanci.gh
+  group: kubesql
+  kind: MysqlCluster
+  path: github.com/vellanci/kube-mysql.git/api/v1alpha1
+  version: v1alpha1
 version: "3"

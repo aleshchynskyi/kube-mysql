@@ -1,0 +1,7 @@
+apiVersion: kubesql.vellanci.gh/v1alpha1
+kind: MysqlCluster
+metadata:
+  name: mysqlcluster-sample
+spec:
+  # Add fields here
+  foo: bar
