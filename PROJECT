@@ -1,0 +1,9 @@
+domain: vellanci.gh
+layout:
+- go.kubebuilder.io/v3
+plugins:
+  manifests.sdk.operatorframework.io/v2: {}
+  scorecard.sdk.operatorframework.io/v2: {}
+projectName: kube-mysql
+repo: github.com/vellanci/kube-mysql.git
+version: "3"
