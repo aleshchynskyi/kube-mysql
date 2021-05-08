@@ -19,13 +19,11 @@ package controllers
 import (
 	"context"
 	"github.com/go-logr/logr"
-	"github.com/kr/pretty"
+	kubesqlv1alpha1 "github.com/vellanci/kube-mysql.git/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	kubesqlv1alpha1 "github.com/vellanci/kube-mysql.git/api/v1alpha1"
 )
 
 // MysqlClusterReconciler reconciles a MysqlCluster object
@@ -39,15 +37,6 @@ type MysqlClusterReconciler struct {
 //+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlclusters/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlclusters/finalizers,verbs=update
 
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the MysqlCluster object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
-//
-// For more details, check Reconcile and its Result here:
-// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.7.2/pkg/reconcile
 func (r *MysqlClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	objectKey := req.NamespacedName
 	cluster := &kubesqlv1alpha1.MysqlCluster{}
@@ -58,9 +47,34 @@ func (r *MysqlClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request
 		return ctrl.Result{}, err
 	}
 
-	ctrl.LoggerFrom(ctx).Info("New MysqlCluster: \n" + pretty.Sprint(cluster))
+	currentConfigSpec, err := r.GetClusterConfig(ctx, cluster)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	cluster.Status.ConfigSpec = currentConfigSpec
+
+	_, err = r.CreateOrUpdatePVC(ctx, cluster)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	_, err = r.createOrUpdateService(ctx, cluster)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	_, err = r.createOrUpdateSet(ctx, cluster)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
 
 	return ctrl.Result{}, nil
+}
+
+func buildLabels(cluster *kubesqlv1alpha1.MysqlCluster) map[string]string {
+	return map[string]string{
+		"vellanci.gh/mysql-cluster": cluster.Name,
+	}
 }
 
 // SetupWithManager sets up the controller with the Manager.

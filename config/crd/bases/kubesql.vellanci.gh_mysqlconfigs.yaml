@@ -6,20 +6,20 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: mysqlclusters.kubesql.vellanci.gh
+  name: mysqlconfigs.kubesql.vellanci.gh
 spec:
   group: kubesql.vellanci.gh
   names:
-    kind: MysqlCluster
-    listKind: MysqlClusterList
-    plural: mysqlclusters
-    singular: mysqlcluster
-  scope: Namespaced
+    kind: MysqlConfig
+    listKind: MysqlConfigList
+    plural: mysqlconfigs
+    singular: mysqlconfig
+  scope: Cluster
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: MysqlCluster is the Schema for the mysqlclusters API
+        description: MysqlConfig is the Schema for the mysqlconfigs API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -34,42 +34,15 @@ spec:
           metadata:
             type: object
           spec:
-            description: MysqlClusterSpec defines the desired state of MysqlCluster
+            description: MysqlConfigSpec defines the desired state of MysqlConfig
             properties:
-              config:
-                properties:
-                  name:
-                    type: string
-                  spec:
-                    description: MysqlConfigSpec defines the desired state of MysqlConfig
-                    properties:
-                      images:
-                        additionalProperties:
-                          type: string
-                        type: object
-                    type: object
+              images:
+                additionalProperties:
+                  type: string
                 type: object
-              replicas:
-                format: int32
-                type: integer
             type: object
           status:
-            description: MysqlClusterStatus defines the observed state of MysqlCluster
-            properties:
-              configSpec:
-                description: MysqlConfigSpec defines the desired state of MysqlConfig
-                properties:
-                  images:
-                    additionalProperties:
-                      type: string
-                    type: object
-                type: object
-              service:
-                type: string
-              statefulSet:
-                type: string
-              storagePVC:
-                type: string
+            description: MysqlConfigStatus defines the observed state of MysqlConfig
             type: object
         type: object
     served: true

@@ -23,49 +23,39 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-type MysqlClusterSpecConfig struct {
-	Name string           `json:"name,omitempty"`
-	Spec *MysqlConfigSpec `json:"spec,omitempty"`
+// MysqlConfigSpec defines the desired state of MysqlConfig
+type MysqlConfigSpec struct {
+	Images map[string]string `json:"images,omitempty"`
 }
 
-// MysqlClusterSpec defines the desired state of MysqlCluster
-type MysqlClusterSpec struct {
-	Config   MysqlClusterSpecConfig `json:"config,omitempty"`
-	Replicas int32                  `json:"replicas,omitempty"`
-}
-
-// MysqlClusterStatus defines the observed state of MysqlCluster
-type MysqlClusterStatus struct {
-	ConfigSpec  *MysqlConfigSpec `json:"configSpec,omitempty"`
-	StatefulSet string           `json:"statefulSet,omitempty"`
-	Service     string           `json:"service,omitempty"`
-	StoragePVC  string           `json:"storagePVC,omitempty"`
-
+// MysqlConfigStatus defines the observed state of MysqlConfig
+type MysqlConfigStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:scope=Cluster
 
-// MysqlCluster is the Schema for the mysqlclusters API
-type MysqlCluster struct {
+// MysqlConfig is the Schema for the mysqlconfigs API
+type MysqlConfig struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   MysqlClusterSpec   `json:"spec,omitempty"`
-	Status MysqlClusterStatus `json:"status,omitempty"`
+	Spec   MysqlConfigSpec   `json:"spec,omitempty"`
+	Status MysqlConfigStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// MysqlClusterList contains a list of MysqlCluster
-type MysqlClusterList struct {
+// MysqlConfigList contains a list of MysqlConfig
+type MysqlConfigList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []MysqlCluster `json:"items"`
+	Items           []MysqlConfig `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&MysqlCluster{}, &MysqlClusterList{})
+	SchemeBuilder.Register(&MysqlConfig{}, &MysqlConfigList{})
 }

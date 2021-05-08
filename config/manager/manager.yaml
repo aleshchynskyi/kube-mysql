@@ -30,6 +30,7 @@ spec:
         args:
         - --leader-elect
         image: vellanci/kube-mysql:latest
+        imagePullPolicy: Always
         name: manager
         securityContext:
           allowPrivilegeEscalation: false

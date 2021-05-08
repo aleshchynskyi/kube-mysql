@@ -1,0 +1,6 @@
+apiVersion: kubesql.vellanci.gh/v1alpha1
+kind: MysqlConfig
+metadata:
+  name: mysqlconfig-sample
+spec:
+  images: {}
