@@ -29,6 +29,9 @@ func updatePVC(_ *v1alpha1.MysqlCluster, pvc *v1.PersistentVolumeClaim) error {
 
 func (r *MysqlClusterReconciler) CreateOrUpdatePVC(ctx context.Context, cluster *v1alpha1.MysqlCluster) (*v1.PersistentVolumeClaim, error) {
 	pvc := buildPVC(cluster)
+	if err := r.SetControllerReference(ctx, cluster, pvc); err != nil {
+		return nil, err
+	}
 	_, err := r.CreateOrUpdate(ctx, pvc, func() error {
 		return updatePVC(cluster, pvc)
 	})

@@ -40,6 +40,9 @@ func updateService(_ *v1alpha1.MysqlCluster, service *v1.Service) error {
 
 func (r *MysqlClusterReconciler) createOrUpdateService(ctx context.Context, cluster *v1alpha1.MysqlCluster) (*v1.Service, error) {
 	service := buildService(cluster)
+	if err := r.SetControllerReference(ctx, cluster, service); err != nil {
+		return nil, err
+	}
 	_, err := r.CreateOrUpdate(ctx, service, func() error {
 		return updateService(cluster, service)
 	})

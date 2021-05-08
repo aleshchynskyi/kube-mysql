@@ -71,6 +71,9 @@ func buildPodSpec(cluster *v1alpha1.MysqlCluster) corev1.PodSpec {
 
 func (r *MysqlClusterReconciler) createOrUpdateSet(ctx context.Context, cluster *v1alpha1.MysqlCluster) (*appsv1.StatefulSet, error) {
 	statefulSet := buildStatefulSet(cluster)
+	if err := r.SetControllerReference(ctx, cluster, statefulSet); err != nil {
+		return nil, err
+	}
 	_, err := r.CreateOrUpdate(ctx, statefulSet, func() error {
 		return updateStatefulSet(cluster, statefulSet)
 	})

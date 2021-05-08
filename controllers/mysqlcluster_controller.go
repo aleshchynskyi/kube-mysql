@@ -53,22 +53,30 @@ func (r *MysqlClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request
 	}
 	cluster.Status.ConfigSpec = currentConfigSpec
 
-	_, err = r.CreateOrUpdatePVC(ctx, cluster)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
-
-	_, err = r.createOrUpdateService(ctx, cluster)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
-
-	_, err = r.createOrUpdateSet(ctx, cluster)
+	err = r.deployMysqlCluster(ctx, cluster)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
 
 	return ctrl.Result{}, nil
+}
+
+func (r *MysqlClusterReconciler) deployMysqlCluster(ctx context.Context, cluster *kubesqlv1alpha1.MysqlCluster) error {
+	_, err := r.CreateOrUpdatePVC(ctx, cluster)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.createOrUpdateService(ctx, cluster)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.createOrUpdateSet(ctx, cluster)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func buildLabels(cluster *kubesqlv1alpha1.MysqlCluster) map[string]string {
