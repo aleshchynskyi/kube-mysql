@@ -16,7 +16,9 @@ func (r *MysqlClusterReconciler) CreateOrUpdate(ctx context.Context, object clie
 		logger.Error(err, "Operation failed", "result", result)
 		return result, err
 	}
-	logger.Info("Operation succeeded", "result", result)
+	if result != controllerutil.OperationResultNone {
+		logger.Info("Operation succeeded", "result", result)
+	}
 	return result, nil
 }
 
