@@ -10,7 +10,7 @@ import (
 )
 
 func (r *MysqlClusterReconciler) CreateOrUpdate(ctx context.Context, object client.Object, fn func() error) (controllerutil.OperationResult, error) {
-	logger := loggerForObject(ctx, object)
+	logger := r.loggerForObject(ctx, object)
 	result, err := ctrl.CreateOrUpdate(ctx, r.Client, object, fn)
 	if err != nil {
 		logger.Error(err, "Operation failed", "result", result)
@@ -22,9 +22,15 @@ func (r *MysqlClusterReconciler) CreateOrUpdate(ctx context.Context, object clie
 	return result, nil
 }
 
-func loggerForObject(ctx context.Context, object client.Object) logr.Logger {
+func (r *MysqlClusterReconciler) loggerForObject(ctx context.Context, object client.Object) logr.Logger {
+	kinds, _, err := r.Scheme.ObjectKinds(object)
+	if len(kinds) < 1 {
+		logger := ctrl.LoggerFrom(ctx, "name", object.GetName())
+		logger.Error(err, "Cannot find a kind of an object")
+		return logger
+	}
 	return ctrl.LoggerFrom(ctx,
-		"kind", object.GetObjectKind().GroupVersionKind().Kind,
+		"kind", kinds[0].Kind,
 		"name", object.GetName(),
 	)
 }
