@@ -34,11 +34,15 @@ type MysqlClusterStorage struct {
 	Resources    *v1.ResourceRequirements `json:"resources,omitempty"`
 }
 
+type MysqlClusterTerminal struct {
+}
+
 // MysqlClusterSpec defines the desired state of MysqlCluster
 type MysqlClusterSpec struct {
 	Config   MysqlClusterSpecConfig `json:"config,omitempty"`
 	Replicas *int32                 `json:"replicas,omitempty"`
 	Storage  MysqlClusterStorage    `json:"storage,omitempty"`
+	Terminal *MysqlClusterTerminal  `json:"terminal,omitempty"`
 }
 
 // MysqlClusterStatus defines the observed state of MysqlCluster

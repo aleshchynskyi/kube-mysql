@@ -68,6 +68,16 @@ func (r *MysqlClusterReconciler) reconcileWithoutResult(ctx context.Context, req
 		return err
 	}
 
+	if cluster.Spec.Terminal != nil {
+		if err := r.deployTerminal(ctx, cluster); err != nil {
+			return err
+		}
+	} else {
+		if err := r.undeployTerminal(ctx, cluster); err != nil {
+			return err
+		}
+	}
+
 	if !equality.Semantic.DeepEqual(currentInstance.Status, cluster.Status) {
 		if err := r.Status().Update(ctx, cluster); err != nil {
 			logger.Error(err, "Cannot update cluster status")

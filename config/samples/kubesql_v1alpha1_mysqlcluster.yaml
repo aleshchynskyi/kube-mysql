@@ -5,3 +5,4 @@ metadata:
 spec:
   config:
     name: "mysqlconfig-sample"
+  terminal: {}
