@@ -1,7 +1,7 @@
 apiVersion: kubesql.vellanci.gh/v1alpha1
 kind: MysqlConfig
 metadata:
-  name: default-mysql-config
+  name: default-config
 spec:
   images:
     mysql: "mysql:5.6"

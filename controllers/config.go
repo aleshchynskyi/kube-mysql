@@ -5,13 +5,14 @@ import (
 	mysqlalpha1 "github.com/vellanci/kube-mysql.git/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
+	"os"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-const DefaultMysqlConfig = "default-mysql-config"
+const DefaultMysqlConfigEnv = "DEFAULT_MYSQL_CONFIG"
 
 func (r *MysqlClusterReconciler) GetClusterConfig(ctx context.Context, cluster *mysqlalpha1.MysqlCluster) (*mysqlalpha1.MysqlConfigSpec, error) {
-	defaultMysqlConfig, err := r.GetMysqlConfig(ctx, DefaultMysqlConfig)
+	defaultMysqlConfig, err := r.GetMysqlConfig(ctx, os.Getenv(DefaultMysqlConfigEnv))
 	if err != nil {
 		return nil, err
 	}

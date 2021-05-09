@@ -24,9 +24,11 @@ bases:
 # [PROMETHEUS] To enable prometheus monitor, uncomment all sections with 'PROMETHEUS'.
 #- ../prometheus
 resources:
-  - default-mysql-config.yaml
+  - default_mysql_config.yaml
 
 patchesStrategicMerge:
+- default_mysql_config_patch.yaml
+
 # Protect the /metrics endpoint by putting it behind auth.
 # If you want your controller-manager to expose the /metrics
 # endpoint w/o any authn/z, please comment the following line.
@@ -47,6 +49,12 @@ patchesStrategicMerge:
 
 # the following config is for teaching kustomize how to do var substitution
 vars:
+- name: DEFAULT_MYSQL_CONFIG
+  objref:
+    apiVersion: kubesql.vellanci.gh/v1alpha1
+    kind: MysqlConfig
+    name: default-config
+
 # [CERTMANAGER] To enable cert-manager, uncomment all sections with 'CERTMANAGER' prefix.
 #- name: CERTIFICATE_NAMESPACE # namespace of the certificate CR
 #  objref:
