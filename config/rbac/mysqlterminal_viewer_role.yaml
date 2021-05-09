@@ -1,0 +1,20 @@
+# permissions for end users to view mysqlterminals.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mysqlterminal-viewer-role
+rules:
+- apiGroups:
+  - kubesql.vellanci.gh
+  resources:
+  - mysqlterminals
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - kubesql.vellanci.gh
+  resources:
+  - mysqlterminals/status
+  verbs:
+  - get

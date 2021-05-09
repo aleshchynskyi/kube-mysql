@@ -1,0 +1,8 @@
+apiVersion: kubesql.vellanci.gh/v1alpha1
+kind: MysqlTerminal
+metadata:
+  name: mysqlterminal-sample-diff-ns
+spec:
+  cluster:
+    name: mysqlcluster-sample
+    namespace: kubesql-sample

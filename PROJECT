@@ -24,4 +24,13 @@ resources:
   kind: MysqlConfig
   path: github.com/vellanci/kube-mysql.git/api/v1alpha1
   version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: vellanci.gh
+  group: kubesql
+  kind: MysqlTerminal
+  path: github.com/vellanci/kube-mysql.git/api/v1alpha1
+  version: v1alpha1
 version: "3"

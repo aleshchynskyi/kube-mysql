@@ -79,11 +79,23 @@ func main() {
 	}
 
 	if err = (&controllers.MysqlClusterReconciler{
-		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("MysqlCluster"),
-		Scheme: mgr.GetScheme(),
+		CommonReconciler: controllers.CommonReconciler{
+			Client: mgr.GetClient(),
+			Log:    ctrl.Log.WithName("controllers").WithName("MysqlCluster"),
+			Scheme: mgr.GetScheme(),
+		},
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "MysqlCluster")
+		os.Exit(1)
+	}
+	if err = (&controllers.MysqlTerminalReconciler{
+		CommonReconciler: controllers.CommonReconciler{
+			Client: mgr.GetClient(),
+			Log:    ctrl.Log.WithName("controllers").WithName("MysqlTerminal"),
+			Scheme: mgr.GetScheme(),
+		},
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "MysqlTerminal")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

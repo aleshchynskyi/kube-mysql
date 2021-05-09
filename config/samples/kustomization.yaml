@@ -1,5 +1,9 @@
+namespace: "kubesql-sample"
+
 ## Append samples you want in your CSV to this file as resources ##
 resources:
+  - kubesql-sample-ns.yaml
   - kubesql_v1alpha1_mysqlconfig.yaml
   - kubesql_v1alpha1_mysqlcluster.yaml
+  - kubesql_v1alpha1_mysqlterminal.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

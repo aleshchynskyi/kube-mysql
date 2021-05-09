@@ -1,0 +1,24 @@
+# permissions for end users to edit mysqlterminals.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mysqlterminal-editor-role
+rules:
+- apiGroups:
+  - kubesql.vellanci.gh
+  resources:
+  - mysqlterminals
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - kubesql.vellanci.gh
+  resources:
+  - mysqlterminals/status
+  verbs:
+  - get

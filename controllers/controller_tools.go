@@ -3,13 +3,19 @@ package controllers
 import (
 	"context"
 	"github.com/go-logr/logr"
-	"github.com/vellanci/kube-mysql.git/api/v1alpha1"
+	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
-func (r *MysqlClusterReconciler) CreateOrUpdate(ctx context.Context, object client.Object, fn func() error) (controllerutil.OperationResult, error) {
+type CommonReconciler struct {
+	client.Client
+	Log    logr.Logger
+	Scheme *runtime.Scheme
+}
+
+func (r *CommonReconciler) CreateOrUpdate(ctx context.Context, object client.Object, fn func() error) (controllerutil.OperationResult, error) {
 	logger := r.loggerForObject(ctx, object)
 	result, err := ctrl.CreateOrUpdate(ctx, r.Client, object, fn)
 	if err != nil {
@@ -22,7 +28,7 @@ func (r *MysqlClusterReconciler) CreateOrUpdate(ctx context.Context, object clie
 	return result, nil
 }
 
-func (r *MysqlClusterReconciler) loggerForObject(ctx context.Context, object client.Object) logr.Logger {
+func (r *CommonReconciler) loggerForObject(ctx context.Context, object client.Object) logr.Logger {
 	kinds, _, err := r.Scheme.ObjectKinds(object)
 	if len(kinds) < 1 {
 		logger := ctrl.LoggerFrom(ctx, "name", object.GetName())
@@ -35,8 +41,8 @@ func (r *MysqlClusterReconciler) loggerForObject(ctx context.Context, object cli
 	)
 }
 
-func (r MysqlClusterReconciler) SetControllerReference(ctx context.Context, cluster *v1alpha1.MysqlCluster, object client.Object) error {
-	if err := ctrl.SetControllerReference(cluster, object, r.Scheme); err != nil {
+func (r CommonReconciler) SetControllerReference(ctx context.Context, owner client.Object, object client.Object) error {
+	if err := ctrl.SetControllerReference(owner, object, r.Scheme); err != nil {
 		ctrl.LoggerFrom(ctx).Error(err, "Cannot set controller reference")
 		return err
 	}

@@ -32,3 +32,29 @@ rules:
   - get
   - patch
   - update
+- apiGroups:
+  - kubesql.vellanci.gh
+  resources:
+  - mysqlterminals
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - kubesql.vellanci.gh
+  resources:
+  - mysqlterminals/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - kubesql.vellanci.gh
+  resources:
+  - mysqlterminals/status
+  verbs:
+  - get
+  - patch
+  - update

@@ -18,22 +18,17 @@ package controllers
 
 import (
 	"context"
-	"github.com/go-logr/logr"
 	kubesqlv1alpha1 "github.com/vellanci/kube-mysql.git/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // MysqlClusterReconciler reconciles a MysqlCluster object
 type MysqlClusterReconciler struct {
-	client.Client
-	Log    logr.Logger
-	Scheme *runtime.Scheme
+	CommonReconciler
 }
 
 //+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlclusters,verbs=get;list;watch;create;update;patch;delete
