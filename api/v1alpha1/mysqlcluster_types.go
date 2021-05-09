@@ -31,7 +31,7 @@ type MysqlClusterSpecConfig struct {
 // MysqlClusterSpec defines the desired state of MysqlCluster
 type MysqlClusterSpec struct {
 	Config   MysqlClusterSpecConfig `json:"config,omitempty"`
-	Replicas int32                  `json:"replicas,omitempty"`
+	Replicas *int32                 `json:"replicas,omitempty"`
 }
 
 // MysqlClusterStatus defines the observed state of MysqlCluster

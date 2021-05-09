@@ -25,14 +25,16 @@ func buildStatefulSet(cluster *v1alpha1.MysqlCluster) *appsv1.StatefulSet {
 			Selector: &metav1.LabelSelector{
 				MatchLabels: buildLabels(cluster),
 			},
+			ServiceName: cluster.Status.Service,
 		},
 	}
 }
 
 func updateStatefulSet(cluster *v1alpha1.MysqlCluster, set *appsv1.StatefulSet) error {
-	set.Spec.Replicas = &cluster.Spec.Replicas
+	if cluster.Spec.Replicas != nil {
+		set.Spec.Replicas = cluster.Spec.Replicas
+	}
 	set.Spec.Template.Spec = buildPodSpec(cluster)
-	set.Spec.ServiceName = cluster.Status.Service
 	return nil
 }
 

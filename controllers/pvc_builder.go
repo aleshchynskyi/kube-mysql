@@ -19,6 +19,9 @@ func buildPVC(cluster *v1alpha1.MysqlCluster) *v1.PersistentVolumeClaim {
 }
 
 func updatePVC(_ *v1alpha1.MysqlCluster, pvc *v1.PersistentVolumeClaim) error {
+	pvc.Spec.AccessModes = []v1.PersistentVolumeAccessMode{
+		v1.ReadWriteMany,
+	}
 	pvc.Spec.Resources = v1.ResourceRequirements{
 		Requests: map[v1.ResourceName]resource.Quantity{
 			v1.ResourceStorage: resource.MustParse("1Gi"),
