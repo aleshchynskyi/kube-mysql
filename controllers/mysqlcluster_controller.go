@@ -53,9 +53,14 @@ func (r *MysqlClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request
 	}
 	cluster.Status.ConfigSpec = currentConfigSpec
 
-	err = r.deployMysqlCluster(ctx, cluster)
-	if err != nil {
+	if err = r.deployMysqlCluster(ctx, cluster); err != nil {
 		return ctrl.Result{}, err
+	}
+
+	if cluster.Spec.Terminal != nil {
+		if err = r.deployTerminal(ctx, cluster); err != nil {
+			return ctrl.Result{}, err
+		}
 	}
 
 	return ctrl.Result{}, nil

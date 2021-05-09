@@ -28,9 +28,13 @@ type MysqlClusterSpecConfig struct {
 	Spec *MysqlConfigSpec `json:"spec,omitempty"`
 }
 
+type MysqlTerminalSpec struct {
+}
+
 // MysqlClusterSpec defines the desired state of MysqlCluster
 type MysqlClusterSpec struct {
 	Config   MysqlClusterSpecConfig `json:"config,omitempty"`
+	Terminal *MysqlTerminalSpec      `json:"terminal,omitempty"`
 	Replicas int32                  `json:"replicas,omitempty"`
 }
 
