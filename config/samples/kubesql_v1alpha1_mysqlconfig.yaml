@@ -3,4 +3,5 @@ kind: MysqlConfig
 metadata:
   name: mysqlconfig-sample
 spec:
-  images: {}
+  images:
+    mysql: "mysql:5.6"

@@ -22,6 +22,7 @@ import (
 	kubesqlv1alpha1 "github.com/vellanci/kube-mysql.git/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -40,27 +41,51 @@ type MysqlClusterReconciler struct {
 //+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlclusters/finalizers,verbs=update
 
 func (r *MysqlClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	return ctrl.Result{}, r.reconcileWithoutResult(ctx, req)
+}
+func (r *MysqlClusterReconciler) reconcileWithoutResult(ctx context.Context, req ctrl.Request) error {
+	logger := ctrl.LoggerFrom(ctx)
 	objectKey := req.NamespacedName
-	cluster := &kubesqlv1alpha1.MysqlCluster{}
-	if err := r.Get(ctx, objectKey, cluster); err != nil {
+	currentInstance := &kubesqlv1alpha1.MysqlCluster{}
+	if err := r.Get(ctx, objectKey, currentInstance); err != nil {
 		if errors.IsNotFound(err) {
-			return ctrl.Result{}, nil
+			logger.Info("Cluster is getting deleted")
+			return nil
 		}
-		return ctrl.Result{}, err
+		logger.Error(err, "Cannot get cluster CR")
+		return err
 	}
+	cluster := currentInstance.DeepCopy()
 
 	currentConfigSpec, err := r.GetClusterConfig(ctx, cluster)
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 	cluster.Status.ConfigSpec = currentConfigSpec
 
 	err = r.deployMysqlCluster(ctx, cluster)
 	if err != nil {
-		return ctrl.Result{}, err
+		return err
 	}
 
-	return ctrl.Result{}, nil
+	if !equality.Semantic.DeepEqual(currentInstance.Status, cluster.Status) {
+		if err := r.Status().Update(ctx, cluster); err != nil {
+			logger.Error(err, "Cannot update cluster status")
+			return err
+		}
+		logger.Info("Updated cluster status")
+		currentInstance.Status = cluster.Status
+	}
+
+	if !equality.Semantic.DeepEqual(currentInstance, cluster) {
+		if err := r.Update(ctx, cluster); err != nil {
+			logger.Error(err, "Cannot update cluster CR")
+			return err
+		}
+		logger.Info("Updated cluster CR")
+	}
+
+	return nil
 }
 
 func (r *MysqlClusterReconciler) deployMysqlCluster(ctx context.Context, cluster *kubesqlv1alpha1.MysqlCluster) error {

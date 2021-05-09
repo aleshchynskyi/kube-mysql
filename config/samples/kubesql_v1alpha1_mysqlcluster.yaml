@@ -3,4 +3,5 @@ kind: MysqlCluster
 metadata:
   name: mysqlcluster-sample
 spec:
-
+  config:
+    name: "mysqlconfig-sample"
