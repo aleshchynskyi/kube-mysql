@@ -20,6 +20,8 @@ import (
 	"context"
 	"github.com/go-logr/logr"
 	kubesqlv1alpha1 "github.com/vellanci/kube-mysql.git/api/v1alpha1"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -89,5 +91,9 @@ func buildLabels(cluster *kubesqlv1alpha1.MysqlCluster) map[string]string {
 func (r *MysqlClusterReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&kubesqlv1alpha1.MysqlCluster{}).
+		Owns(&corev1.PersistentVolumeClaim{}).
+		Owns(&corev1.Service{}).
+		Owns(&appsv1.StatefulSet{}).
+		Owns(&corev1.Pod{}).
 		Complete(r)
 }
