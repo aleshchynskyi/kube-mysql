@@ -5,22 +5,15 @@ import (
 	mysqlalpha1 "github.com/vellanci/kube-mysql.git/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
-	"os"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-const DefaultMysqlConfigEnv = "DEFAULT_MYSQL_CONFIG"
-
 func (r *MysqlClusterReconciler) GetClusterConfig(ctx context.Context, cluster *mysqlalpha1.MysqlCluster) (*mysqlalpha1.MysqlConfigSpec, error) {
-	defaultMysqlConfig, err := r.GetMysqlConfig(ctx, os.Getenv(DefaultMysqlConfigEnv))
-	if err != nil {
-		return nil, err
-	}
 	referredMysqlConfig, err := r.GetMysqlConfig(ctx, cluster.Spec.Config.Name)
 	if err != nil {
 		return nil, err
 	}
-	currentConfigSpec := MergeConfigs(defaultMysqlConfig, referredMysqlConfig, cluster.Spec.Config.Spec)
+	currentConfigSpec := MergeConfigs(referredMysqlConfig, cluster.Spec.Config.Spec)
 	return currentConfigSpec, nil
 }
 
@@ -41,7 +34,9 @@ func (r *MysqlClusterReconciler) GetMysqlConfig(ctx context.Context, configName 
 }
 
 func MergeConfigs(configs ...*mysqlalpha1.MysqlConfigSpec) *mysqlalpha1.MysqlConfigSpec {
-	var result = &mysqlalpha1.MysqlConfigSpec{}
+	var result = &mysqlalpha1.MysqlConfigSpec{
+		Images: map[string]string{},
+	}
 	for _, next := range configs {
 		if next == nil {
 			continue
