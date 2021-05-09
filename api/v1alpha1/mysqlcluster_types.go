@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,18 +29,24 @@ type MysqlClusterSpecConfig struct {
 	Spec *MysqlConfigSpec `json:"spec,omitempty"`
 }
 
+type MysqlClusterStorage struct {
+	VolumeSource *v1.VolumeSource         `json:"volumeSource,omitempty"`
+	Resources    *v1.ResourceRequirements `json:"resources,omitempty"`
+}
+
 // MysqlClusterSpec defines the desired state of MysqlCluster
 type MysqlClusterSpec struct {
 	Config   MysqlClusterSpecConfig `json:"config,omitempty"`
 	Replicas *int32                 `json:"replicas,omitempty"`
+	Storage  MysqlClusterStorage    `json:"storage,omitempty"`
 }
 
 // MysqlClusterStatus defines the observed state of MysqlCluster
 type MysqlClusterStatus struct {
-	ConfigSpec  *MysqlConfigSpec `json:"configSpec,omitempty"`
-	StatefulSet string           `json:"statefulSet,omitempty"`
-	Service     string           `json:"service,omitempty"`
-	StoragePVC  string           `json:"storagePVC,omitempty"`
+	ConfigSpec          MysqlConfigSpec `json:"configSpec,omitempty"`
+	StatefulSet         string          `json:"statefulSet,omitempty"`
+	Service             string          `json:"service,omitempty"`
+	StorageVolumeSource v1.VolumeSource `json:"StorageVolumeSource,omitempty"`
 
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file

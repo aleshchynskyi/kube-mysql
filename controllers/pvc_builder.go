@@ -3,34 +3,43 @@ package controllers
 import (
 	"context"
 	"github.com/vellanci/kube-mysql.git/api/v1alpha1"
-	"k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func buildPVC(cluster *v1alpha1.MysqlCluster) *v1.PersistentVolumeClaim {
-	return &v1.PersistentVolumeClaim{
-		ObjectMeta: v12.ObjectMeta{
+func buildPVC(cluster *v1alpha1.MysqlCluster) *corev1.PersistentVolumeClaim {
+	return &corev1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
 			Name:      cluster.Name + "-mysql",
 			Namespace: cluster.Namespace,
 			Labels:    buildLabels(cluster),
 		},
+		Spec: corev1.PersistentVolumeClaimSpec{
+			AccessModes: []corev1.PersistentVolumeAccessMode{
+				corev1.ReadWriteOnce,
+			},
+			Resources: corev1.ResourceRequirements{
+				Requests: map[corev1.ResourceName]resource.Quantity{
+					corev1.ResourceStorage: resource.MustParse("1Gi"),
+				},
+			},
+		},
 	}
 }
 
-func updatePVC(_ *v1alpha1.MysqlCluster, pvc *v1.PersistentVolumeClaim) error {
-	pvc.Spec.AccessModes = []v1.PersistentVolumeAccessMode{
-		v1.ReadWriteMany,
-	}
-	pvc.Spec.Resources = v1.ResourceRequirements{
-		Requests: map[v1.ResourceName]resource.Quantity{
-			v1.ResourceStorage: resource.MustParse("1Gi"),
-		},
+func updatePVC(cluster *v1alpha1.MysqlCluster, pvc *corev1.PersistentVolumeClaim) error {
+	if cluster.Spec.Storage.Resources != nil {
+		pvc.Spec.Resources = *cluster.Spec.Storage.Resources
 	}
 	return nil
 }
 
-func (r *MysqlClusterReconciler) CreateOrUpdatePVC(ctx context.Context, cluster *v1alpha1.MysqlCluster) (*v1.PersistentVolumeClaim, error) {
+func (r *MysqlClusterReconciler) CreateOrUpdatePVC(ctx context.Context, cluster *v1alpha1.MysqlCluster) (*corev1.PersistentVolumeClaim, error) {
+	if cluster.Spec.Storage.VolumeSource != nil {
+		return nil, nil
+	}
+
 	pvc := buildPVC(cluster)
 	if err := r.SetControllerReference(ctx, cluster, pvc); err != nil {
 		return nil, err
@@ -38,6 +47,10 @@ func (r *MysqlClusterReconciler) CreateOrUpdatePVC(ctx context.Context, cluster 
 	_, err := r.CreateOrUpdate(ctx, pvc, func() error {
 		return updatePVC(cluster, pvc)
 	})
-	cluster.Status.StoragePVC = pvc.Name
+	cluster.Status.StorageVolumeSource = corev1.VolumeSource{
+		PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+			ClaimName: pvc.Name,
+		},
+	}
 	return pvc, err
 }

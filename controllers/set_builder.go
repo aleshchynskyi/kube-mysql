@@ -60,12 +60,8 @@ func buildPodSpec(cluster *v1alpha1.MysqlCluster) corev1.PodSpec {
 		},
 		Volumes: []corev1.Volume{
 			{
-				Name: "storage",
-				VolumeSource: corev1.VolumeSource{
-					PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-						ClaimName: cluster.Status.StoragePVC,
-					},
-				},
+				Name:         "storage",
+				VolumeSource: cluster.Status.StorageVolumeSource,
 			},
 		},
 	}

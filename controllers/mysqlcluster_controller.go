@@ -61,7 +61,7 @@ func (r *MysqlClusterReconciler) reconcileWithoutResult(ctx context.Context, req
 	if err != nil {
 		return err
 	}
-	cluster.Status.ConfigSpec = currentConfigSpec
+	cluster.Status.ConfigSpec = *currentConfigSpec
 
 	err = r.deployMysqlCluster(ctx, cluster)
 	if err != nil {
@@ -75,14 +75,6 @@ func (r *MysqlClusterReconciler) reconcileWithoutResult(ctx context.Context, req
 		}
 		logger.Info("Updated cluster status")
 		currentInstance.Status = cluster.Status
-	}
-
-	if !equality.Semantic.DeepEqual(currentInstance, cluster) {
-		if err := r.Update(ctx, cluster); err != nil {
-			logger.Error(err, "Cannot update cluster CR")
-			return err
-		}
-		logger.Info("Updated cluster CR")
 	}
 
 	return nil
