@@ -34,6 +34,11 @@ type MysqlClusterReconciler struct {
 //+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlclusters,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlclusters/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlclusters/finalizers,verbs=update
+//+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlconfigs,verbs=get;list;watch
+//+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlterminals,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=apps,resources=statefulsets,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=core,resources=persistentvolumeclaims,verbs=get;list;watch;create;update;patch;delete
 
 func (r *MysqlClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	return ctrl.Result{}, r.reconcileWithoutResult(ctx, req)

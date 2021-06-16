@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 
@@ -35,6 +36,8 @@ type MysqlTerminalReconciler struct {
 //+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlterminals,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlterminals/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=kubesql.vellanci.gh,resources=mysqlterminals/finalizers,verbs=update
+//+kubebuilder:rbac:groups=core,resources=pods,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=core,resources=secrets,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -53,6 +56,8 @@ func (r *MysqlTerminalReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 func (r *MysqlTerminalReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&kubesqlv1alpha1.MysqlTerminal{}).
+		Owns(&corev1.Secret{}).
+		Owns(&corev1.Pod{}).
 		Complete(r)
 }
 
